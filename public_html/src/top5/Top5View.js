@@ -36,10 +36,14 @@ export default class Top5View {
         card.setAttribute("class", "unselected-list-card");
 
         // MAKE THE TEXT SPAN
-        let textSpan = document.createElement("span");
+        //let textSpan = document.createElement("span");
+        let textSpan = document.createElement("input");
         textSpan.setAttribute("id", "list-card-text-" + newList.id);
         textSpan.setAttribute("class", "list-card-text");
-        textSpan.appendChild(document.createTextNode(newList.name));
+        textSpan.setAttribute("value", newList.name);
+        //textSpan.appendChild(document.createTextNode(newList.name));
+
+        textSpan.setAttribute("readonly", true);
 
         // MAKE THE DELETE LIST BUTTON
         let deleteButton = document.createElement("input");
@@ -107,6 +111,12 @@ export default class Top5View {
         }
         else {
             this.enableButton("undo-button");
+        }
+        if (!tps.hasTransactionToRedo()) {
+            this.disableButton("redo-button");
         }   
+        else {
+            this.enableButton("redo-button");
+        }
     }
 }

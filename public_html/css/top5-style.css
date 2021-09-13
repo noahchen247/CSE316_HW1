@@ -12,6 +12,8 @@
   --swatch-status: #123456;
   --my-font-family: "Robaaaoto";
   --bounceEasing: cubic-bezier(0.51, 0.92, 0.24, 1.15);
+
+  --swatch-statusbar: #ffa07a;
 }
 
 body {
@@ -69,6 +71,16 @@ body {
   top: 90%;
   width: 100%;
   height: 10%;
+  background-color:var(--swatch-statusbar);
+  font-size: 36pt;
+}
+
+#top5-statusbar p {
+  text-align: center;
+  margin: 0;
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%); 
 }
 
 #sidebar-heading {
@@ -105,6 +117,18 @@ body {
   margin: 10px;
   padding: 20px;
   border-radius: 25px;
+}
+
+.list-card:hover, .selected-list-card:hover, .unselected-list-card:hover {
+  background-color: var(--swatch-contrast);
+}
+
+.list-card:hover, .unselected-list-card:hover > .list-card-text {
+  color: white;
+}
+
+.selected-list-card:hover > .list-card-text {
+  color: white;
 }
 
 .selected-list-card {
@@ -194,4 +218,12 @@ input {
 
 .disabled:hover {
   color: var(--swatch-neutral);
+}
+
+.list-card-text {
+  border: none;
+  border-width: 0;
+  outline: none;
+  background-color: transparent;
+  font-family: "Lexend Exa";
 }

@@ -1,6 +1,7 @@
 import jsTPS from "../common/jsTPS.js"
 import Top5List from "./Top5List.js";
 import ChangeItem_Transaction from "./transactions/ChangeItem_Transaction.js"
+import MoveItem_Transaction from "./transactions/MoveItem_Transaction.js"
 
 /**
  * Top5Model.js
@@ -84,7 +85,7 @@ export default class Top5Model {
     unselectAll() {
         for (let i = 0; i < this.top5Lists.length; i++) {
             let list = this.top5Lists[i];
-            this.view.unhighlightList(i);
+            this.view.unhighlightList(list.id);
         }
     }
 
@@ -98,7 +99,7 @@ export default class Top5Model {
                 // THIS IS THE LIST TO LOAD
                 this.currentList = list;
                 this.view.update(this.currentList);
-                this.view.highlightList(i);
+                this.view.highlightList(id);
                 found = true;
             }
             i++;
@@ -146,8 +147,19 @@ export default class Top5Model {
         this.tps.addTransaction(transaction);
     }
 
+    addMoveItemTransaction = (oldIndex, newIndex) => {
+        let transaction = new MoveItem_Transaction(this, oldIndex, newIndex);
+        this.tps.addTransaction(transaction);
+    }
+
     changeItem(id, text) {
         this.currentList.items[id] = text;
+        this.view.update(this.currentList);
+        this.saveLists();
+    }
+
+    moveItem(oldIndex, newIndex) {
+        this.currentList.moveItem(oldIndex, newIndex);
         this.view.update(this.currentList);
         this.saveLists();
     }
@@ -158,5 +170,29 @@ export default class Top5Model {
             this.tps.undoTransaction();
             this.view.updateToolbarButtons(this);
         }
+    }
+
+    redo() {
+        if (this.tps.hasTransactionToRedo()) {
+            this.tps.doTransaction();
+            this.view.updateToolbarButtons(this);
+        }
+    }
+
+    //change the name of the list
+    changeListName(id, name) {
+        if (name && this.top5Lists[this.getListIndex(id)].getName() != name) {
+            this.top5Lists[this.getListIndex(id)].setName(name);
+        }
+        this.sortLists();
+        this.view.refreshLists(this.top5Lists);
+    }
+
+    deleteList(id) {
+        //console.log(id);
+        let indexToDelete = this.getListIndex(id);
+        this.top5Lists.splice(indexToDelete, 1);
+        this.sortLists();
+        this.view.refreshLists(this.top5Lists);
     }
 }
