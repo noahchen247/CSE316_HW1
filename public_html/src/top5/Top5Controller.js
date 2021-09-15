@@ -51,6 +51,8 @@ export default class Top5Controller {
 
                     let thisModel = this.model;
 
+                    item.draggable = false;
+
                     textInput.ondblclick = (event) => {
                         this.ignoreParentClick(event);
                     }
@@ -58,10 +60,14 @@ export default class Top5Controller {
                         if (event.key === 'Enter') {
                             this.model.addChangeItemTransaction(i-1, event.target.value);
                             document.getElementById("undo-button").classList.remove("disabled");
+                            item.draggable = true;
                         }
                     }
                     textInput.onblur = (event) => {
-                        this.model.restoreList();
+                        this.model.addChangeItemTransaction(i-1, event.target.value);
+                        document.getElementById("undo-button").classList.remove("disabled");
+                        //this.model.restoreList();
+                        item.draggable = true;
                     }
                 }
             }
@@ -113,6 +119,16 @@ export default class Top5Controller {
                     document.getElementById("list-card-text-" + id).readOnly = true;
                     clickedList.children[0].style.backgroundColor = "transparent";
                 }
+            })
+            clickedList.children[0].addEventListener("blur", function(event) {
+                event.preventDefault();
+                listModel.changeListName(id, clickedList.children[0].value);
+                listModel.loadList(id);
+                listModel.saveLists();
+                document.getElementById("top5-statusbar").children[0].innerHTML = 
+                    listModel.getList(listModel.getListIndex(id)).getName();
+                document.getElementById("list-card-text-" + id).readOnly = true;
+                clickedList.children[0].style.backgroundColor = "transparent";
             })
         }
         // FOR DELETING THE LIST
