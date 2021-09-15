@@ -13,6 +13,7 @@ export default class Top5Controller {
 
     setModel(initModel) {
         this.model = initModel;
+        initModel.view.updateToolbarButtons(initModel);
         this.initHandlers();
     }
 
@@ -22,7 +23,10 @@ export default class Top5Controller {
             let newList = this.model.addNewList("Untitled", ["?","?","?","?","?"]);            
             this.model.loadList(newList.id);
             this.model.saveLists();
-            document.getElementById("add-list-button").disabled = true;
+            //document.getElementById("add-list-button").disabled = true;
+            //document.getElementById("close-button").disabled = false;
+            document.getElementById("top5-statusbar").children[0].innerHTML = newList.getName();
+            this.model.view.updateToolbarButtons(this.model);
         }
         document.getElementById("undo-button").onmousedown = (event) => {
             this.model.undo();
@@ -59,13 +63,15 @@ export default class Top5Controller {
                     textInput.onkeydown = (event) => {
                         if (event.key === 'Enter') {
                             this.model.addChangeItemTransaction(i-1, event.target.value);
-                            document.getElementById("undo-button").classList.remove("disabled");
+                            //document.getElementById("undo-button").classList.remove("disabled");
+                            this.model.view.updateToolbarButtons(this.model);
                             item.draggable = true;
                         }
                     }
                     textInput.onblur = (event) => {
                         this.model.addChangeItemTransaction(i-1, event.target.value);
-                        document.getElementById("undo-button").classList.remove("disabled");
+                        //document.getElementById("undo-button").classList.remove("disabled");
+                        this.model.view.updateToolbarButtons(this.model);
                         //this.model.restoreList();
                         item.draggable = true;
                     }
@@ -82,7 +88,8 @@ export default class Top5Controller {
                 let oldIndex = this.model.currentList.items.indexOf(ev.dataTransfer.getData("Text"));
                 this.model.addMoveItemTransaction(oldIndex, newIndex);
                 this.model.saveLists();
-                document.getElementById("undo-button").classList.remove("disabled");
+                //document.getElementById("undo-button").classList.remove("disabled");
+                this.model.view.updateToolbarButtons(this.model);
             }
         }
     }
@@ -99,7 +106,8 @@ export default class Top5Controller {
             document.getElementById("top5-statusbar").children[0].innerHTML = 
                 this.model.getList(this.model.getListIndex(id)).getName();
 
-            document.getElementById("add-list-button").disabled = true;
+            //document.getElementById("add-list-button").disabled = true;
+            this.model.view.updateToolbarButtons(this.model);
         }
         //FOR CHANGING THE LIST NAME
         document.getElementById("top5-list-" + id).ondblclick = (event) => {
@@ -149,10 +157,11 @@ export default class Top5Controller {
                     deletemodel.unselectAll();
                     document.getElementById("top5-statusbar").children[0].innerHTML = "";
                     deletemodel.view.clearWorkspace();
-                    document.getElementById("add-list-button").disabled = false;
+                    //document.getElementById("add-list-button").disabled = false;
                 }
                 this.model.deleteList(id);
                 this.model.saveLists();
+                deletemodel.view.updateToolbarButtons(deletemodel);
             }
             document.getElementById("dialog-cancel-button").onmousedown = (event) => {
                 modal.classList.remove("is-visible");
@@ -162,7 +171,8 @@ export default class Top5Controller {
             this.model.unselectAll();
             document.getElementById("top5-statusbar").children[0].innerHTML = "";
             this.model.view.clearWorkspace();
-            document.getElementById("add-list-button").disabled = false;
+            //document.getElementById("add-list-button").disabled = false;
+            this.model.view.updateToolbarButtons(this.model);
         }
     }
 
