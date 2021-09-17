@@ -118,7 +118,6 @@ export default class Top5View {
         else {
             this.enableButton("redo-button");
         }
-        //console.log(document.getElementById("top5-statusbar").children[0].innerHTML);
         if (document.getElementById("top5-statusbar").children[0].innerHTML === "") {
             this.disableButton("close-button");
             this.enableButton("add-list-button");

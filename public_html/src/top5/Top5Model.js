@@ -189,10 +189,8 @@ export default class Top5Model {
     }
 
     deleteList(id) {
-        //console.log(id);
         let indexToDelete = this.getListIndex(id);
         this.top5Lists.splice(indexToDelete, 1);
-        this.sortLists();
         this.view.refreshLists(this.top5Lists);
     }
 }

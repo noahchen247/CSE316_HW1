@@ -57,20 +57,20 @@ export default class Top5Controller {
 
                     item.draggable = false;
 
+                    textInput.focus();
+
                     textInput.ondblclick = (event) => {
                         this.ignoreParentClick(event);
                     }
                     textInput.onkeydown = (event) => {
                         if (event.key === 'Enter') {
                             this.model.addChangeItemTransaction(i-1, event.target.value);
-                            //document.getElementById("undo-button").classList.remove("disabled");
                             this.model.view.updateToolbarButtons(this.model);
                             item.draggable = true;
                         }
                     }
                     textInput.onblur = (event) => {
                         this.model.addChangeItemTransaction(i-1, event.target.value);
-                        //document.getElementById("undo-button").classList.remove("disabled");
                         this.model.view.updateToolbarButtons(this.model);
                         //this.model.restoreList();
                         item.draggable = true;
@@ -84,6 +84,8 @@ export default class Top5Controller {
                 ev.preventDefault();
             }
             item.ondrop = (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
                 let newIndex = this.model.currentList.items.indexOf(ev.target.innerHTML);
                 let oldIndex = this.model.currentList.items.indexOf(ev.dataTransfer.getData("Text"));
                 this.model.addMoveItemTransaction(oldIndex, newIndex);
@@ -106,7 +108,6 @@ export default class Top5Controller {
             document.getElementById("top5-statusbar").children[0].innerHTML = 
                 this.model.getList(this.model.getListIndex(id)).getName();
 
-            //document.getElementById("add-list-button").disabled = true;
             this.model.view.updateToolbarButtons(this.model);
         }
         //FOR CHANGING THE LIST NAME
@@ -153,15 +154,28 @@ export default class Top5Controller {
             modal.classList.add("is-visible");
             document.getElementById("dialog-confirm-button").onmousedown = (event) => {
                 modal.classList.remove("is-visible");
+                //if the list to be deleted is also the list that is selected
                 if (document.getElementById("top5-list-" + id).classList.contains("selected-list-card")) {
-                    deletemodel.unselectAll();
+                    deletemodel.view.unhighlightList(id);
                     document.getElementById("top5-statusbar").children[0].innerHTML = "";
                     deletemodel.view.clearWorkspace();
-                    //document.getElementById("add-list-button").disabled = false;
+                    this.model.deleteList(id);
+                    this.model.view.disableButton("undo-button");
+                    this.model.view.disableButton("redo-button");
+                    this.model.view.disableButton("close-button");
+                    this.model.view.enableButton("add-list-button");
                 }
-                this.model.deleteList(id);
+                //if there's a selected list that's not the list to be deleted
+                else if (document.getElementsByClassName("selected-list-card")[0] != null) {
+                    let temp = document.getElementsByClassName("selected-list-card")[0].id;
+                    this.model.deleteList(id);
+                    this.model.view.highlightList(temp.replace("top5-list-", ""));
+                }
+                //there is no list selected
+                else {
+                    this.model.deleteList(id);
+                }
                 this.model.saveLists();
-                deletemodel.view.updateToolbarButtons(deletemodel);
             }
             document.getElementById("dialog-cancel-button").onmousedown = (event) => {
                 modal.classList.remove("is-visible");
@@ -171,7 +185,6 @@ export default class Top5Controller {
             this.model.unselectAll();
             document.getElementById("top5-statusbar").children[0].innerHTML = "";
             this.model.view.clearWorkspace();
-            //document.getElementById("add-list-button").disabled = false;
             this.model.view.updateToolbarButtons(this.model);
         }
     }
